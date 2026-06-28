@@ -1,5 +1,5 @@
 function App() {
-  return <h1>E-Commerce App 🛒</h1>
+  return <></>;
 }
 
-export default App
+export default App;
