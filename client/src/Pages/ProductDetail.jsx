@@ -1,7 +1,9 @@
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
+import toast from 'react-hot-toast'
 import { Button, Badge, Card } from '../components'
 import useCartStore from '../store/cartStore'
+import useWishlistStore from '../store/wishlistStore'
 
 function ProductDetail() {
   const [quantity, setQuantity] = useState(1)
@@ -10,18 +12,27 @@ function ProductDetail() {
   const [activeTab, setActiveTab] = useState("description")
 
   const addToCart = useCartStore((state) => state.addToCart)
+  const { addToWishlist, removeFromWishlist, isInWishlist } = useWishlistStore()
 
   const sizes = ["XS", "S", "M", "L", "XL"]
   const colors = ["Black", "White", "Blue", "Red"]
   const tabs = ["description", "specs", "reviews"]
 
+  const product = { id: 1, name: "Product Name", price: 99.99 }
+
   const handleAddToCart = () => {
-    addToCart({
-      id: 1,
-      name: "Product Name",
-      price: 99.99,
-      quantity,
-    })
+    addToCart({ ...product, quantity })
+    toast.success("Added to cart!")
+  }
+
+  const handleWishlist = () => {
+    if (isInWishlist(product.id)) {
+      removeFromWishlist(product.id)
+      toast("Removed from wishlist", { icon: "💔" })
+    } else {
+      addToWishlist(product)
+      toast.success("Added to wishlist!")
+    }
   }
 
   return (
@@ -68,7 +79,6 @@ function ProductDetail() {
           {/* Right — Product Info */}
           <div className="flex-1 flex flex-col gap-4">
 
-            {/* Badge & Title */}
             <div className="flex items-center gap-2">
               <Badge color="green">In Stock</Badge>
               <Badge color="blue">New</Badge>
@@ -76,10 +86,8 @@ function ProductDetail() {
             <h1 className="text-3xl font-black text-gray-900">Product Name</h1>
             <p className="text-gray-500 text-sm leading-relaxed">
               Product description will appear here once connected to the backend.
-              This is a placeholder for the product details.
             </p>
 
-            {/* Price */}
             <div className="flex items-center gap-3">
               <p className="text-3xl font-black text-blue-600">$99.99</p>
               <p className="text-lg text-gray-400 line-through">$129.99</p>
@@ -155,7 +163,13 @@ function ProductDetail() {
               <Button size="lg" onClick={handleAddToCart}>
                 Add to Cart
               </Button>
-              <Button size="lg" variant="secondary">Wishlist ♡</Button>
+              <Button
+                size="lg"
+                variant="secondary"
+                onClick={handleWishlist}
+              >
+                {isInWishlist(product.id) ? "Wishlisted ♥" : "Wishlist ♡"}
+              </Button>
             </div>
 
             {/* Shipping Info */}
@@ -170,8 +184,6 @@ function ProductDetail() {
 
         {/* Tabs Section */}
         <Card className="mb-10">
-
-          {/* Tab Headers */}
           <div className="flex gap-1 border-b border-gray-100 mb-6">
             {tabs.map((tab) => (
               <button
@@ -188,7 +200,6 @@ function ProductDetail() {
             ))}
           </div>
 
-          {/* Tab Content */}
           {activeTab === "description" && (
             <div className="text-gray-500 text-sm leading-relaxed">
               <p>Full product description will appear here once connected to the backend.</p>
@@ -206,7 +217,6 @@ function ProductDetail() {
               <p className="text-gray-400 text-sm mt-1">Reviews will appear here once connected to the backend.</p>
             </div>
           )}
-
         </Card>
 
         {/* Related Products */}

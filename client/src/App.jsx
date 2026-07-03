@@ -1,4 +1,5 @@
 import { BrowserRouter, Routes, Route } from 'react-router-dom'
+import { Toaster } from 'react-hot-toast'
 import Navbar from './components/Navbar'
 import Footer from './components/Footer'
 import { Home, Products, ProductDetail, Cart, Login, Register, NotFound } from './pages'
@@ -7,6 +8,7 @@ function App() {
   return (
     <BrowserRouter>
       <div className="min-h-screen flex flex-col bg-gray-50">
+        <Toaster position="top-right" />
         <Navbar />
         <main className="flex-1">
           <Routes>
