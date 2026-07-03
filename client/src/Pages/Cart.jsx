@@ -1,7 +1,10 @@
 import { Link } from 'react-router-dom'
 import { Button, Card, Badge } from '../components'
+import useCartStore from '../store/cartStore'
 
 function Cart() {
+  const { items, removeFromCart, updateQuantity, clearCart, getTotalPrice } = useCartStore()
+
   return (
     <div className="min-h-screen bg-gray-50">
 
@@ -9,27 +12,81 @@ function Cart() {
       <div className="bg-white border-b border-gray-200 px-6 py-6">
         <div className="max-w-6xl mx-auto">
           <h1 className="text-3xl font-black text-gray-900">Shopping Cart</h1>
-          <p className="text-gray-500 mt-1">0 items in your cart</p>
+          <p className="text-gray-500 mt-1">{items.length} items in your cart</p>
         </div>
       </div>
 
       <div className="max-w-6xl mx-auto px-6 py-8 flex flex-col lg:flex-row gap-8">
 
         {/* Left — Cart Items */}
-        <div className="flex-1">
+        <div className="flex-1 flex flex-col gap-4">
 
-          {/* Empty State */}
-          <Card className="flex flex-col items-center justify-center py-28 text-center">
-            <div className="text-6xl mb-4">🛒</div>
-            <h3 className="text-xl font-bold text-gray-700 mb-2">Your cart is empty</h3>
-            <p className="text-gray-400 text-sm mb-6">
-              Looks like you have not added anything yet.
-            </p>
-            <Link to="/products">
-              <Button>Start Shopping →</Button>
-            </Link>
-          </Card>
+          {items.length === 0 ? (
+            <Card className="flex flex-col items-center justify-center py-28 text-center">
+              <div className="text-6xl mb-4">🛒</div>
+              <h3 className="text-xl font-bold text-gray-700 mb-2">Your cart is empty</h3>
+              <p className="text-gray-400 text-sm mb-6">
+                Looks like you have not added anything yet.
+              </p>
+              <Link to="/products">
+                <Button>Start Shopping →</Button>
+              </Link>
+            </Card>
+          ) : (
+            <>
+              {items.map((item) => (
+                <Card key={item.id}>
+                  <div className="flex items-center gap-4">
 
+                    {/* Image */}
+                    <div className="w-20 h-20 bg-gray-100 rounded-xl flex items-center justify-center text-2xl flex-shrink-0">
+                      📦
+                    </div>
+
+                    {/* Info */}
+                    <div className="flex-1">
+                      <h3 className="font-bold text-gray-900">{item.name}</h3>
+                      <p className="text-blue-600 font-black">${item.price}</p>
+                    </div>
+
+                    {/* Quantity */}
+                    <div className="flex items-center gap-2">
+                      <button
+                        onClick={() => updateQuantity(item.id, item.quantity - 1)}
+                        className="w-8 h-8 rounded-lg border border-gray-300 text-gray-600 hover:bg-gray-50 font-bold transition-colors"
+                      >
+                        -
+                      </button>
+                      <span className="text-sm font-bold w-6 text-center">{item.quantity}</span>
+                      <button
+                        onClick={() => updateQuantity(item.id, item.quantity + 1)}
+                        className="w-8 h-8 rounded-lg border border-gray-300 text-gray-600 hover:bg-gray-50 font-bold transition-colors"
+                      >
+                        +
+                      </button>
+                    </div>
+
+                    {/* Remove */}
+                    <button
+                      onClick={() => removeFromCart(item.id)}
+                      className="text-red-400 hover:text-red-600 text-sm font-medium transition-colors"
+                    >
+                      Remove
+                    </button>
+
+                  </div>
+                </Card>
+              ))}
+
+              {/* Clear Cart */}
+              <button
+                onClick={clearCart}
+                className="text-sm text-gray-400 hover:text-red-500 transition-colors self-start font-medium"
+              >
+                Clear Cart
+              </button>
+            </>
+          )}
         </div>
 
         {/* Right — Order Summary */}
@@ -42,7 +99,7 @@ function Cart() {
             <div className="flex flex-col gap-3 mb-6">
               <div className="flex items-center justify-between text-sm">
                 <span className="text-gray-500">Subtotal</span>
-                <span className="font-semibold text-gray-800">$0.00</span>
+                <span className="font-semibold text-gray-800">${getTotalPrice()}</span>
               </div>
               <div className="flex items-center justify-between text-sm">
                 <span className="text-gray-500">Shipping</span>
@@ -54,7 +111,7 @@ function Cart() {
               </div>
               <div className="border-t border-gray-100 pt-3 flex items-center justify-between">
                 <span className="font-black text-gray-900">Total</span>
-                <span className="font-black text-xl text-blue-600">$0.00</span>
+                <span className="font-black text-xl text-blue-600">${getTotalPrice()}</span>
               </div>
             </div>
 
@@ -73,9 +130,7 @@ function Cart() {
 
             {/* Checkout Button */}
             <Link to="/checkout">
-              <Button size="lg">
-                Proceed to Checkout →
-              </Button>
+              <Button size="lg">Proceed to Checkout →</Button>
             </Link>
 
             {/* Continue Shopping */}

@@ -1,12 +1,13 @@
 import { Link, useLocation } from 'react-router-dom'
+import useCartStore from '../store/cartStore'
 
 function Navbar() {
   const { pathname } = useLocation()
+  const getTotalItems = useCartStore((state) => state.getTotalItems)
 
   const links = [
     { name: "Home", path: "/" },
     { name: "Products", path: "/products" },
-    { name: "Cart", path: "/cart" },
   ]
 
   return (
@@ -30,6 +31,24 @@ function Navbar() {
               {link.name}
             </Link>
           ))}
+
+          {/* Cart with count badge */}
+          <Link
+            to="/cart"
+            className={`relative text-sm font-medium transition-colors duration-200 ${
+              pathname === "/cart"
+                ? "text-blue-600"
+                : "text-gray-500 hover:text-gray-900"
+            }`}
+          >
+            Cart
+            {getTotalItems() > 0 && (
+              <span className="absolute -top-2 -right-3 bg-blue-600 text-white text-xs w-4 h-4 rounded-full flex items-center justify-center">
+                {getTotalItems()}
+              </span>
+            )}
+          </Link>
+
           <Link
             to="/login"
             className="text-sm font-medium bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors duration-200"

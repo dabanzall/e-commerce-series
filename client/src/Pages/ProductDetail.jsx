@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import { Button, Badge, Card } from '../components'
+import useCartStore from '../store/cartStore'
 
 function ProductDetail() {
   const [quantity, setQuantity] = useState(1)
@@ -8,9 +9,20 @@ function ProductDetail() {
   const [selectedColor, setSelectedColor] = useState("")
   const [activeTab, setActiveTab] = useState("description")
 
+  const addToCart = useCartStore((state) => state.addToCart)
+
   const sizes = ["XS", "S", "M", "L", "XL"]
   const colors = ["Black", "White", "Blue", "Red"]
   const tabs = ["description", "specs", "reviews"]
+
+  const handleAddToCart = () => {
+    addToCart({
+      id: 1,
+      name: "Product Name",
+      price: 99.99,
+      quantity,
+    })
+  }
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -140,7 +152,9 @@ function ProductDetail() {
 
             {/* Actions */}
             <div className="flex gap-3 mt-2">
-              <Button size="lg">Add to Cart</Button>
+              <Button size="lg" onClick={handleAddToCart}>
+                Add to Cart
+              </Button>
               <Button size="lg" variant="secondary">Wishlist ♡</Button>
             </div>
 
