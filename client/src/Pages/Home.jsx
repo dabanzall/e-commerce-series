@@ -1,5 +1,7 @@
 import { Link } from 'react-router-dom'
+import { useQuery } from '@tanstack/react-query'
 import { Button, Badge, Card } from '../components'
+import { getProducts } from '../services'
 
 const categories = [
   { name: "Electronics", icon: "💻", color: "bg-blue-50 hover:bg-blue-100" },
@@ -9,6 +11,11 @@ const categories = [
 ]
 
 function Home() {
+  const { data: products, isLoading } = useQuery({
+    queryKey: ['featured-products'],
+    queryFn: () => getProducts()
+  })
+
   return (
     <div className="min-h-screen">
 
@@ -104,11 +111,36 @@ function Home() {
               <Button variant="secondary">View All →</Button>
             </Link>
           </div>
-          <div className="flex flex-col items-center justify-center py-20 text-center bg-white rounded-2xl border border-gray-100">
-            <div className="text-6xl mb-4">🛍️</div>
-            <h3 className="text-xl font-bold text-gray-700 mb-2">No products yet</h3>
-            <p className="text-gray-400 text-sm">Products will appear here once the backend is connected.</p>
-          </div>
+
+          {/* Loading */}
+          {isLoading && (
+            <div className="flex justify-center py-20">
+              <div className="w-10 h-10 border-4 border-gray-200 border-t-blue-600 rounded-full animate-spin" />
+            </div>
+          )}
+
+          {/* Products Grid */}
+          {!isLoading && (
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+              {products?.slice(0, 4).map((product) => (
+                <Link to={`/products/${product.id}`} key={product.id}>
+                  <Card hover>
+                    <div className="bg-gray-100 rounded-xl h-40 mb-4 flex items-center justify-center text-5xl">
+                      📦
+                    </div>
+                    <div className="flex justify-between items-start mb-2">
+                      <h3 className="font-bold text-gray-800 text-sm">{product.name}</h3>
+                      <Badge color="blue">{product.category?.name}</Badge>
+                    </div>
+                    <p className="text-gray-400 text-xs mb-2 truncate">{product.description}</p>
+                    <p className="text-blue-600 font-black mb-3">${product.price}</p>
+                    <Button size="sm">Add to Cart</Button>
+                  </Card>
+                </Link>
+              ))}
+            </div>
+          )}
+
         </div>
       </section>
 
