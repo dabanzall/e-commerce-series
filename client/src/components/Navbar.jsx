@@ -1,9 +1,19 @@
-import { Link, useLocation } from 'react-router-dom'
+import { Link, useLocation, useNavigate } from 'react-router-dom'
+import toast from 'react-hot-toast'
 import useCartStore from '../store/cartStore'
+import useAuthStore from '../store/authStore'
 
 function Navbar() {
   const { pathname } = useLocation()
+  const navigate = useNavigate()
   const getTotalItems = useCartStore((state) => state.getTotalItems)
+  const { user, logout } = useAuthStore()
+
+  const handleLogout = () => {
+    logout()
+    toast.success('Logged out successfully!')
+    navigate('/')
+  }
 
   const links = [
     { name: "Home", path: "/" },
@@ -49,12 +59,26 @@ function Navbar() {
             )}
           </Link>
 
-          <Link
-            to="/login"
-            className="text-sm font-medium bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors duration-200"
-          >
-            Login
-          </Link>
+          {user ? (
+            <div className="flex items-center gap-3">
+              <span className="text-sm text-gray-600 font-medium">
+                Hi, {user.name.split(' ')[0]}!
+              </span>
+              <button
+                onClick={handleLogout}
+                className="text-sm font-medium text-red-500 hover:text-red-600 transition-colors duration-200"
+              >
+                Logout
+              </button>
+            </div>
+          ) : (
+            <Link
+              to="/login"
+              className="text-sm font-medium bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors duration-200"
+            >
+              Login
+            </Link>
+          )}
         </div>
       </div>
     </nav>
