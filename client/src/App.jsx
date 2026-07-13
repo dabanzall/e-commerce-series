@@ -3,6 +3,7 @@ import { Toaster } from 'react-hot-toast'
 import Navbar from './components/Navbar'
 import Footer from './components/Footer'
 import { Home, Products, ProductDetail, Cart, Login, Register, NotFound } from './pages'
+import Checkout from './pages/Checkout'
 
 function App() {
   return (
@@ -18,6 +19,7 @@ function App() {
             <Route path="/cart" element={<Cart />} />
             <Route path="/login" element={<Login />} />
             <Route path="/register" element={<Register />} />
+            <Route path="/checkout" element={<Checkout />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </main>
