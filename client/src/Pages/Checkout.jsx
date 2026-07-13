@@ -6,7 +6,7 @@ import useCartStore from '../store/cartStore'
 import useAuthStore from '../store/authStore'
 import { api } from '../services'
 
-const steps = ['Address', 'Payment', 'Review']
+const steps = ['Address', 'Review']
 
 function Checkout() {
   const navigate = useNavigate()
@@ -23,18 +23,8 @@ function Checkout() {
     zip: '',
   })
 
-  const [payment, setPayment] = useState({
-    cardNumber: '',
-    expiry: '',
-    cvv: '',
-  })
-
   const handleAddressChange = (e) => {
     setAddress({ ...address, [e.target.name]: e.target.value })
-  }
-
-  const handlePaymentChange = (e) => {
-    setPayment({ ...payment, [e.target.name]: e.target.value })
   }
 
   const handlePlaceOrder = async () => {
@@ -50,7 +40,7 @@ function Checkout() {
       clearCart()
       toast.success('Order placed successfully! 🎉')
       navigate('/')
-    } catch (error) {
+    } catch (_error) {
       toast.error('Failed to place order. Please try again.')
     } finally {
       setLoading(false)
@@ -99,7 +89,7 @@ function Checkout() {
           <div className="flex items-center gap-3 mt-4">
             {steps.map((step, index) => (
               <div key={step} className="flex items-center gap-3">
-                <div className={`flex items-center gap-2`}>
+                <div className="flex items-center gap-2">
                   <div className={`w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold ${
                     index < currentStep
                       ? "bg-green-500 text-white"
@@ -152,14 +142,14 @@ function Checkout() {
                   <Input
                     label="City"
                     name="city"
-                    placeholder="New York"
+                    placeholder="Sulaymaniyah"
                     value={address.city}
                     onChange={handleAddressChange}
                   />
                   <Input
                     label="ZIP Code"
                     name="zip"
-                    placeholder="10001"
+                    placeholder="46001"
                     value={address.zip}
                     onChange={handleAddressChange}
                   />
@@ -167,64 +157,26 @@ function Checkout() {
                 <Input
                   label="Country"
                   name="country"
-                  placeholder="United States"
+                  placeholder="Iraq"
                   value={address.country}
                   onChange={handleAddressChange}
                 />
+                <Input
+                  label="Phone Number"
+                  name="phone"
+                  placeholder="+964 750 000 0000"
+                  value={address.phone || ''}
+                  onChange={handleAddressChange}
+                />
                 <Button size="lg" onClick={() => setCurrentStep(1)}>
-                  Continue to Payment →
+                  Review Order →
                 </Button>
               </div>
             </Card>
           )}
 
-          {/* Step 2 — Payment */}
+          {/* Step 2 — Review */}
           {currentStep === 1 && (
-            <Card>
-              <h2 className="text-xl font-black text-gray-900 mb-6">Payment Details</h2>
-              <div className="flex flex-col gap-4">
-                <Input
-                  label="Card Number"
-                  name="cardNumber"
-                  placeholder="1234 5678 9012 3456"
-                  value={payment.cardNumber}
-                  onChange={handlePaymentChange}
-                />
-                <div className="grid grid-cols-2 gap-4">
-                  <Input
-                    label="Expiry Date"
-                    name="expiry"
-                    placeholder="MM/YY"
-                    value={payment.expiry}
-                    onChange={handlePaymentChange}
-                  />
-                  <Input
-                    label="CVV"
-                    name="cvv"
-                    placeholder="123"
-                    value={payment.cvv}
-                    onChange={handlePaymentChange}
-                  />
-                </div>
-                <div className="bg-yellow-50 border border-yellow-200 rounded-xl p-4">
-                  <p className="text-yellow-700 text-sm font-medium">
-                    ⚠️ Real payments will be handled by Stripe in Episode 18
-                  </p>
-                </div>
-                <div className="flex gap-3">
-                  <Button variant="secondary" size="lg" onClick={() => setCurrentStep(0)}>
-                    ← Back
-                  </Button>
-                  <Button size="lg" onClick={() => setCurrentStep(2)}>
-                    Review Order →
-                  </Button>
-                </div>
-              </div>
-            </Card>
-          )}
-
-          {/* Step 3 — Review */}
-          {currentStep === 2 && (
             <Card>
               <h2 className="text-xl font-black text-gray-900 mb-6">Review Order</h2>
 
@@ -247,15 +199,21 @@ function Checkout() {
               </div>
 
               {/* Address Summary */}
-              <div className="bg-gray-50 rounded-xl p-4 mb-6">
+              <div className="bg-gray-50 rounded-xl p-4 mb-4">
                 <p className="text-sm font-bold text-gray-800 mb-1">Shipping to:</p>
                 <p className="text-sm text-gray-500">{address.fullName}</p>
                 <p className="text-sm text-gray-500">{address.street}, {address.city} {address.zip}</p>
                 <p className="text-sm text-gray-500">{address.country}</p>
               </div>
 
+              {/* Cash on Delivery Notice */}
+              <div className="bg-green-50 border border-green-200 rounded-xl p-4 mb-6">
+                <p className="text-green-700 text-sm font-bold mb-1">💵 Cash on Delivery</p>
+                <p className="text-green-600 text-sm">You will pay when your order arrives at your door.</p>
+              </div>
+
               <div className="flex gap-3">
-                <Button variant="secondary" size="lg" onClick={() => setCurrentStep(1)}>
+                <Button variant="secondary" size="lg" onClick={() => setCurrentStep(0)}>
                   ← Back
                 </Button>
                 <Button size="lg" onClick={handlePlaceOrder}>
@@ -278,9 +236,20 @@ function Checkout() {
                 </div>
               ))}
             </div>
-            <div className="border-t border-gray-100 pt-4 flex justify-between">
+            <div className="border-t border-gray-100 pt-3 flex justify-between mb-2">
+              <span className="text-sm text-gray-500">Subtotal</span>
+              <span className="font-semibold text-gray-800">${getTotalPrice()}</span>
+            </div>
+            <div className="flex justify-between mb-4">
+              <span className="text-sm text-gray-500">Shipping</span>
+              <span className="text-green-600 font-semibold text-sm">Free</span>
+            </div>
+            <div className="border-t border-gray-100 pt-3 flex justify-between">
               <span className="font-black text-gray-900">Total</span>
               <span className="font-black text-blue-600 text-lg">${getTotalPrice()}</span>
+            </div>
+            <div className="mt-4 bg-green-50 rounded-lg p-3">
+              <p className="text-green-700 text-xs font-medium text-center">💵 Pay on delivery</p>
             </div>
           </Card>
         </div>
