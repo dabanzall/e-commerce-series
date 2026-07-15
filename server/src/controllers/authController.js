@@ -4,10 +4,20 @@ const jwt = require('jsonwebtoken')
 
 const JWT_SECRET = 'shopzone_secret_key_2026'
 
-// POST /api/auth/register
 const register = async (req, res) => {
   try {
     const { name, email, password } = req.body
+
+    // Validate inputs
+    if (!name || !email || !password) {
+      return res.status(400).json({ message: 'All fields are required' })
+    }
+    if (password.length < 6) {
+      return res.status(400).json({ message: 'Password must be at least 6 characters' })
+    }
+    if (!email.includes('@')) {
+      return res.status(400).json({ message: 'Invalid email address' })
+    }
 
     const existing = await prisma.user.findUnique({ where: { email } })
     if (existing) {
@@ -36,10 +46,13 @@ const register = async (req, res) => {
   }
 }
 
-// POST /api/auth/login
 const login = async (req, res) => {
   try {
     const { email, password } = req.body
+
+    if (!email || !password) {
+      return res.status(400).json({ message: 'All fields are required' })
+    }
 
     const user = await prisma.user.findUnique({ where: { email } })
     if (!user) {
@@ -67,7 +80,6 @@ const login = async (req, res) => {
   }
 }
 
-// GET /api/auth/me
 const getMe = async (req, res) => {
   try {
     const user = await prisma.user.findUnique({
