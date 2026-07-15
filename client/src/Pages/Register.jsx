@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import toast from 'react-hot-toast'
-import { Button, Input, Card } from '../components'
+import { Button, Input, Card, SEO } from '../components'
 import { registerUser } from '../services'
 import useAuthStore from '../store/authStore'
 
@@ -32,6 +32,10 @@ function Register() {
 
   return (
     <div className="min-h-screen bg-gray-50 flex items-center justify-center px-4">
+      <SEO
+  title="Create Account"
+  description="Join ShopZone today and start shopping."
+/>
       <div className="w-full max-w-md">
 
         <div className="text-center mb-8">

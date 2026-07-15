@@ -1,6 +1,6 @@
 import { Link } from 'react-router-dom'
 import { useQuery } from '@tanstack/react-query'
-import { Button, Badge, Card } from '../components'
+import { Button, Badge, Card, SEO } from '../components'
 import { getProducts } from '../services'
 
 const categories = [
@@ -18,6 +18,11 @@ function Home() {
 
   return (
     <div className="min-h-screen">
+
+      <SEO
+        title="Home"
+        description="Discover thousands of products at unbeatable prices. From electronics to fashion — we have it all."
+      />
 
       {/* Hero Section */}
       <section className="bg-gray-50 border-b border-gray-200 py-12 px-6">
