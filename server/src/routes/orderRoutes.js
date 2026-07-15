@@ -4,12 +4,14 @@ const {
   createOrder,
   getMyOrders,
   getOrderById,
-  updateOrderStatus
+  updateOrderStatus,
+  getAllOrders
 } = require('../controllers/orderController')
 const { protect, adminOnly } = require('../middleware/authMiddleware')
 
 router.post('/', protect, createOrder)
 router.get('/me', protect, getMyOrders)
+router.get('/all', protect, adminOnly, getAllOrders)
 router.get('/:id', protect, getOrderById)
 router.patch('/:id/status', protect, adminOnly, updateOrderStatus)
 

@@ -83,7 +83,27 @@ const getOrderById = async (req, res) => {
     res.status(500).json({ message: 'Failed to get order', error: error.message })
   }
 }
+// GET /api/orders/all (admin only)
+const getAllOrders = async (req, res) => {
+  try {
+    const orders = await prisma.order.findMany({
+      include: {
+        items: {
+          include: { product: true }
+        },
+        user: {
+          select: { id: true, name: true, email: true }
+        }
+      },
+      orderBy: { createdAt: 'desc' }
+    })
 
+    res.json(orders)
+  } catch (error) {
+    console.error('GET ALL ORDERS ERROR:', error.message)
+    res.status(500).json({ message: 'Failed to get orders', error: error.message })
+  }
+}
 // PATCH /api/orders/:id/status
 const updateOrderStatus = async (req, res) => {
   try {
@@ -102,4 +122,4 @@ const updateOrderStatus = async (req, res) => {
   }
 }
 
-module.exports = { createOrder, getMyOrders, getOrderById, updateOrderStatus }
+module.exports = { createOrder, getMyOrders, getOrderById, updateOrderStatus, getAllOrders }
